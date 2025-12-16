@@ -233,6 +233,7 @@
                         <option>Bond</option>
                         <option>Debenture</option>
                         <option>Commercial Paper</option>
+                         <option>Bank Facilities</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -279,6 +280,12 @@
                 <label for="rationale">Rating Rationale</label>
                 <textarea id="rationale" placeholder="Enter the detailed rating rationale here..."></textarea>
             </div>
+             
+ <div class="form-group">
+ <label for="files">Upload Supporting Documents</label>
+ <input type="file" id="files" multiple accept=".pdf,.xlsx,.xls,.docx,.txt" placeholder="Upload PDF, Excel, Word, or Text files">
+ <small style="color: #999; display: block; margin-top: 5px;">You can upload multiple files (PDF, Excel, Word, Text)</small>
+ </div>
             
             <button onclick="submitRationale()">Submit Rationale</button>
             <div id="message" style="margin-top: 10px;"></div>
