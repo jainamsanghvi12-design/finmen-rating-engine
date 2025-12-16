@@ -96,6 +96,35 @@ streamlit run app.py
 3. Connect your GitHub repository
 4. Add secrets in the Streamlit dashboard
 5. Deploy!
+6. 
+### Configuration
+
+**Setting up Streamlit Secrets:**
+
+To properly configure the app, you need to add your Google Sheets credentials to the Streamlit Cloud secrets:
+
+1. Go to your app settings in Streamlit Cloud
+2. Navigate to the "Secrets" tab
+3. Paste your Google service account JSON credentials in the following format:
+
+```toml
+google_sheets_key = {
+    "type": "service_account",
+    "project_id": "your-project-id",
+    "private_key_id": "your-private-key-id",
+    "private_key": "your-private-key",
+    "client_email": "your-service-account@your-project.iam.gserviceaccount.com",
+    "client_id": "your-client-id",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "your-cert-url"
+}
+
+google_sheet_id = "your-google-sheet-id"
+```
+
+**Note:** Make sure to replace the values with your actual Google service account credentials and Google Sheet ID.
 
 ## Contact
 
