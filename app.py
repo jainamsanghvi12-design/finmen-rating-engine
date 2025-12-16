@@ -20,7 +20,8 @@ if 'google_sheets_key' not in st.secrets:
     st.error("Google Sheets credentials not found in secrets")
     st.stop()
 
-creds_dict = st.secrets['google_sheets_key']scope = ['https://www.googleapis.com/auth/spreadsheets']
+creds_dict = st.secrets['google_sheets_key'
+scope = ['https://www.googleapis.com/auth/spreadsheets']
 creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
 gc = gspread.authorize(creds)
 
