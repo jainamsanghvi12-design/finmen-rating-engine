@@ -5,6 +5,10 @@ import gspread
 import json
 import io
 from datetime import datetime
+from peer_matcher import initialize_peer_matcher, match_peers, flag_opportunities
+from search_engine import initialize_search_engine, index_document, search, autocomplete
+
+# Initialize AI engines\ninitialize_peer_matcher()\ninitialize_search_engine()
 
 # Initialize Streamlit page config
 st.set_page_config(
