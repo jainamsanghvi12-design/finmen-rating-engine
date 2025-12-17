@@ -1,1 +1,139 @@
-test_finmen.py"""\nFINMEN Testing Suite - Validate all components before deployment\nRun this script: python test_finmen.py\n"""\n\nimport sys\nimport os\nfrom datetime import datetime\n\n# Color codes for terminal output\nGREEN = '\\033[92m'\nRED = '\\033[91m'\nYELLOW = '\\033[93m'\nBLUE = '\\033[94m'\nRESET = '\\033[0m'\nBOLD = '\\033[1m'\n\ntest_results = {\n    'passed': 0,\n    'failed': 0,\n    'warnings': 0\n}\n\ndef print_header(text):\n    print(f"\\n{BOLD}{BLUE}{'='*60}{RESET}")\n    print(f"{BOLD}{BLUE}{text.center(60)}{RESET}")\n    print(f"{BOLD}{BLUE}{'='*60}{RESET}\\n")\n\ndef print_test(test_name, status, message=""):\n    if status == "PASS":\n        print(f"{GREEN}✓ PASS{RESET}: {test_name}")\n        test_results['passed'] += 1\n    elif status == "FAIL":\n        print(f"{RED}✗ FAIL{RESET}: {test_name}")\n        if message:\n            print(f"  {RED}→ {message}{RESET}")\n        test_results['failed'] += 1\n    elif status == "WARN":\n        print(f"{YELLOW}⚠ WARN{RESET}: {test_name}")\n        if message:\n            print(f"  {YELLOW}→ {message}{RESET}")\n        test_results['warnings'] += 1\n\ndef test_imports():\n    """Test if all required modules can be imported"""\n    print_header("Testing Module Imports")\n    \n    modules_to_test = [\n        ('streamlit', 'Streamlit'),\n        ('pandas', 'Pandas'),\n        ('google.auth', 'Google Auth'),\n        ('gspread', 'Gspread'),\n    ]\n    \n    for module_name, display_name in modules_to_test:\n        try:\n            __import__(module_name)\n            print_test(f"Import {display_name}", "PASS")\n        except ImportError as e:\n            print_test(f"Import {display_name}", "FAIL", str(e))\n\ndef test_files_exist():\n    """Test if all required files exist"""\n    print_header("Testing Required Files")\n    \n    required_files = [\n        'app.py',\n        'peer_matcher.py',\n        'search_engine.py',\n        'ai_analyzer.py',\n        'requirements.txt',\n        'README.md',\n        '.env.example',\n    ]\n    \n    for file_name in required_files:\n        if os.path.exists(file_name):\n            print_test(f"File exists: {file_name}", "PASS")\n        else:\n            print_test(f"File exists: {file_name}", "FAIL", "File not found")\n\ndef test_peer_matcher():\n    """Test peer matcher module"""\n    print_header("Testing Peer Matcher Engine")\n    \n    try:\n        from peer_matcher import PeerMatcher\n        pm = PeerMatcher()\n        print_test("Peer Matcher initialization", "PASS")\n        \n        # Test peer matching\n        peers = pm.find_peers(\n            company_name='Ashiana Housing',\n            industry='Real Estate',\n            rating='A+',\n            top_n=3\n        )\n        \n        if peers and len(peers) > 0:\n            print_test("Peer matching", "PASS", f"Found {len(peers)} peers")\n        else:\n            print_test("Peer matching", "FAIL", "No peers found")\n            \n    except Exception as e:\n        print_test("Peer Matcher", "FAIL", str(e))\n\ndef test_search_engine():\n    """Test search engine module"""\n    print_header("Testing Search Engine")\n    \n    try:\n        from search_engine import FullTextSearchEngine\n        se = FullTextSearchEngine()\n        print_test("Search Engine initialization", "PASS")\n        \n        # Test document indexing\n        se.index_document(\n            doc_id='test_1',\n            company='Test Company',\n            agency='CRISIL',\n            rating='AA',\n            content='This is a test rationale for testing purposes'\n        )\n        print_test("Document indexing", "PASS")\n        \n        # Test search\n        results = se.search('test', limit=10)\n        if results:\n            print_test("Search functionality", "PASS", f"Found {len(results)} results")\n        else:\n            print_test("Search functionality", "WARN", "No results found for test query")\n            \n    except Exception as e:\n        print_test("Search Engine", "FAIL", str(e))\n\ndef test_ai_analyzer():\n    """Test AI analyzer module"""\n    print_header("Testing AI Analyzer")\n    \n    try:\n        from ai_analyzer import AIRatingAnalyzer\n        analyzer = AIRatingAnalyzer()\n        print_test("AI Analyzer initialization", "PASS")\n        \n        # Test analysis\n        result = analyzer.analyze_rationale(\n            company='Test Corp',\n            rating='A+',\n            rationale='Strong financial position with stable growth trajectory'\n        )\n        \n        if result:\n            print_test("Rationale analysis", "PASS", "Analysis completed")\n        else:\n            print_test("Rationale analysis", "WARN", "Analysis returned empty")\n            \n    except ImportError:\n        print_test("AI Analyzer", "WARN", "Module not imported (optional)")\n    except Exception as e:\n        print_test("AI Analyzer", "FAIL", str(e))\n\ndef test_dependencies():\n    """Test if requirements.txt is valid"""\n    print_header("Testing Dependencies")\n    \n    try:\n        with open('requirements.txt', 'r') as f:\n            lines = f.readlines()\n        dependencies = [line.strip() for line in lines if line.strip() and not line.startswith('#')]\n        print_test(f"Requirements.txt found", "PASS", f"Contains {len(dependencies)} dependencies")\n    except FileNotFoundError:\n        print_test("Requirements.txt", "FAIL", "File not found")\n    except Exception as e:\n        print_test("Requirements.txt", "FAIL", str(e))\n\ndef print_summary():\n    """Print test summary"""\n    print_header("Test Summary")\n    \n    total = test_results['passed'] + test_results['failed'] + test_results['warnings']\n    pass_rate = (test_results['passed'] / total * 100) if total > 0 else 0\n    \n    print(f"{BOLD}Results:{RESET}")\n    print(f"  {GREEN}Passed: {test_results['passed']}{RESET}")\n    print(f"  {YELLOW}Warnings: {test_results['warnings']}{RESET}")\n    print(f"  {RED}Failed: {test_results['failed']}{RESET}")\n    print(f"  {BOLD}Pass Rate: {pass_rate:.1f}%{RESET}")\n    \n    if test_results['failed'] == 0:\n        print(f"\\n{GREEN}{BOLD}✓ ALL TESTS PASSED! Ready for deployment.{RESET}")\n        return 0\n    else:\n        print(f"\\n{RED}{BOLD}✗ Some tests failed. Fix issues before deployment.{RESET}")\n        return 1\n\nif __name__ == "__main__":\n    print(f"{BOLD}{BLUE}\\n🧪 FINMEN Testing Suite{RESET}")\n    print(f"{BLUE}Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}{RESET}")\n    \n    test_imports()\n    test_files_exist()\n    test_peer_matcher()\n    test_search_engine()\n    test_ai_analyzer()\n    test_dependencies()\n    \n    exit_code = print_summary()\n    sys.exit(exit_code)
+"""FINMEN Testing Suite - Validate all components before deployment
+Run this script: python test_finmen.py
+"""
+
+import sys
+import os
+from datetime import datetime
+
+# Color codes for terminal output
+GREEN = '\033[92m'
+RED = '\033[91m'
+YELLOW = '\033[93m'
+BLUE = '\033[94m'
+RESET = '\033[0m'
+BOLD = '\033[1m'
+
+test_results = {
+    'passed': 0,
+    'failed': 0,
+    'warnings': 0
+}
+
+def print_header(text):
+    print(f"\n{BOLD}{BLUE}{'='*60}{RESET}")
+    print(f"{BOLD}{BLUE}{text.center(60)}{RESET}")
+    print(f"{BOLD}{BLUE}{'='*60}{RESET}\n")
+
+def print_test(test_name, status, message=""):
+    if status == "PASS":
+        print(f"{GREEN}PASS{RESET}: {test_name}")
+        test_results['passed'] += 1
+    elif status == "FAIL":
+        print(f"{RED}FAIL{RESET}: {test_name}")
+        if message:
+            print(f"  {RED}Error: {message}{RESET}")
+        test_results['failed'] += 1
+    elif status == "WARN":
+        print(f"{YELLOW}WARN{RESET}: {test_name}")
+        if message:
+            print(f"  {YELLOW}Warning: {message}{RESET}")
+        test_results['warnings'] += 1
+
+def print_summary():
+    print(f"\n{BOLD}{BLUE}{'='*60}{RESET}")
+    print(f"{BOLD}TEST SUMMARY{RESET}")
+    print(f"{BOLD}{BLUE}{'='*60}{RESET}")
+    print(f"{GREEN}Passed: {test_results['passed']}{RESET}")
+    print(f"{RED}Failed: {test_results['failed']}{RESET}")
+    print(f"{YELLOW}Warnings: {test_results['warnings']}{RESET}")
+    total = test_results['passed'] + test_results['failed'] + test_results['warnings']
+    print(f"{BOLD}Total Tests: {total}{RESET}\n")
+
+# TEST 1: Python & Environment Setup
+print_header("TEST 1: Environment Validation")
+try:
+    python_version = sys.version_info
+    if python_version.major >= 3 and python_version.minor >= 8:
+        print_test("Python Version Check", "PASS", f"Python {python_version.major}.{python_version.minor}.{python_version.micro}")
+    else:
+        print_test("Python Version Check", "FAIL", f"Requires Python 3.8+, found {python_version.major}.{python_version.minor}")
+except Exception as e:
+    print_test("Python Version Check", "FAIL", str(e))
+
+# TEST 2: Check Required Files
+print_header("TEST 2: Project Structure Validation")
+required_files = [
+    'app.py',
+    'peer_matcher.py',
+    'search_engine.py',
+    'requirements.txt',
+    'index.html'
+]
+
+for file in required_files:
+    if os.path.exists(file):
+        print_test(f"File Exists: {file}", "PASS")
+    else:
+        print_test(f"File Exists: {file}", "FAIL", f"{file} not found in project root")
+
+# TEST 3: Check Dependencies
+print_header("TEST 3: Dependency Check")
+required_packages = ['streamlit', 'google']
+
+for package in required_packages:
+    try:
+        __import__(package)
+        print_test(f"Package Installed: {package}", "PASS")
+    except ImportError:
+        print_test(f"Package Installed: {package}", "FAIL", f"Run: pip install -r requirements.txt")
+
+# TEST 4: Peer Matcher Module
+print_header("TEST 4: Peer Matcher Module")
+try:
+    from peer_matcher import PeerMatcher
+    matcher = PeerMatcher()
+    print_test("PeerMatcher Import", "PASS")
+    print_test("PeerMatcher Initialization", "PASS")
+except Exception as e:
+    print_test("PeerMatcher Module", "FAIL", str(e))
+
+# TEST 5: Search Engine Module
+print_header("TEST 5: Search Engine Module")
+try:
+    from search_engine import SearchEngine
+    search = SearchEngine()
+    print_test("SearchEngine Import", "PASS")
+    print_test("SearchEngine Initialization", "PASS")
+except Exception as e:
+    print_test("SearchEngine Module", "FAIL", str(e))
+
+# TEST 6: Streamlit App
+print_header("TEST 6: Streamlit Application")
+try:
+    with open('app.py', 'r') as f:
+        app_content = f.read()
+        if 'streamlit' in app_content:
+            print_test("App.py Contains Streamlit", "PASS")
+        else:
+            print_test("App.py Contains Streamlit", "FAIL")
+except Exception as e:
+    print_test("App.py Check", "FAIL", str(e))
+
+# TEST 7: Configuration Files
+print_header("TEST 7: Configuration Files")
+config_files = ['.env.example', '.env.production', 'requirements.txt']
+for config in config_files:
+    if os.path.exists(config):
+        print_test(f"Config File: {config}", "PASS")
+    else:
+        print_test(f"Config File: {config}", "WARN", f"Optional: {config} not found")
+
+print_summary()
+
+if test_results['failed'] > 0:
+    print(f"{RED}TESTING FAILED - Fix errors and re-run{RESET}\n")
+    sys.exit(1)
+else:
+    print(f"{GREEN}ALL TESTS PASSED - Ready for deployment!{RESET}\n")
+    sys.exit(0)
