@@ -1,14 +1,263 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>FINMEN Rating Intelligence - AI Powered</title><script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;padding:20px}.container{max-width:1400px;margin:0 auto;background:#fff;border-radius:15px;box-shadow:0 20px 60px rgba(0,0,0,.3);overflow:hidden}.header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:40px 20px;text-align:center}.header h1{font-size:2.5em;margin-bottom:10px}.tabs{display:flex;background:#f5f5f5;border-bottom:2px solid #ddd;overflow-x:auto}.tab-btn{flex:1;padding:15px;border:none;background:0;cursor:pointer;font-size:.95em;font-weight:500;color:#666;min-width:120px;white-space:nowrap}.tab-btn.active{background:#fff;color:#667eea;border-bottom:3px solid #667eea}.tab-content{display:none;padding:30px}.tab-content.active{display:block}.form-group{margin-bottom:20px}label{display:block;margin-bottom:8px;font-weight:600;color:#333}input,select,textarea{width:100%;padding:12px;border:1px solid #ddd;border-radius:5px;font-family:inherit}textarea{min-height:150px;resize:vertical}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:20px}button{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:12px 30px;border:none;border-radius:5px;font-weight:600;cursor:pointer;margin-top:10px}.alert{padding:15px;border-radius:5px;margin-bottom:20px;border-left:4px solid}.alert-info{background:#d1ecf1;color:#0c5460;border-left-color:#17a2b8}.data-table{width:100%;border-collapse:collapse;margin-top:20px}.data-table th{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:15px;text-align:left;font-weight:600}.data-table td{padding:12px 15px;border-bottom:1px solid #ddd}.peer-card{border:1px solid #ddd;border-radius:8px;padding:20px;margin-bottom:15px}.peer-card h4{color:#667eea;margin-bottom:10px}.peer-card .score{float:right;font-size:1.3em;font-weight:bold;color:#667eea}.opportunity-item{background:#f0f7ff;border-left:4px solid #667eea;padding:15px;margin-bottom:15px;border-radius:5px}.opportunity-item.upgrade{background:#d4edda;border-left-color:#28a745}.opportunity-item.downgrade{background:#f8d7da;border-left-color:#dc3545}.section-title{font-size:1.5em;color:#333;margin-top:30px;margin-bottom:20px;border-bottom:3px solid #667eea;padding-bottom:10px}@media (max-width:768px){.form-row{grid-template-columns:1fr}}</style></head><body><div class="container"><div class="header"><h1>🏦 FINMEN Rating Intelligence Engine</h1><p>AI-Powered Analysis | Peer Intelligence | Opportunity Flagging</p></div><div class="tabs"><button class="tab-btn active" onclick="switchTab(event,'input')">📝 Input</button><button class="tab-btn" onclick="switchTab(event,'analysis')">🤖 Analysis</button><button class="tab-btn" onclick="switchTab(event,'peers')">👥 Peers</button><button class="tab-btn" onclick="switchTab(event,'data')">📋 Data</button></div><div id="input" class="tab-content active"><div class="alert alert-info"><strong>📊 PRODUCTION</strong> - AI Analysis | Peer Matching | Opportunity Flagging</div><div class="form-row"><div class="form-group"><label>Company Name</label><input type="text" id="company" placeholder="e.g., Ashiana Housing Limited"></div><div class="form-group"><label>Rating Agency</label><select id="agency"><option>CRISIL</option><option>ICRA</option><option>CARE</option></select></div></div><div class="form-row"><div class="form-group"><label>Sector</label><select id="sector"><option>Real Estate</option><option>NBFC</option><option>Banking</option><option>Infrastructure</option></select></div><div class="form-group"><label>Rating</label><select id="rating"><option>AAA</option><option>AA+</option><option>AA</option><option>A+</option><option>A</option><option>BBB+</option><option>BBB</option></select></div></div><div class="form-row"><div class="form-group"><label>Outlook</label><select id="outlook"><option>Positive</option><option>Stable</option><option>Negative</option></select></div><div class="form-group"><label>Rating Action</label><select id="action"><option>Initial Rating</option><option>Upgrade</option><option>Downgrade</option><option>Affirmed</option></select></div></div><div class="form-group"><label>Rating Rationale</label><textarea id="rationale" placeholder="Paste rating analysis..."></textarea></div><button onclick="submitRating()">🚀 Submit & Analyze</button></div><div id="analysis" class="tab-content"><div id="analysisContent"><p style="color:#999;text-align:center;padding:40px">Submit a rating to view AI analysis</p></div></div><div id="peers" class="tab-content"><div id="peersContent"><p style="color:#999;text-align:center;padding:40px">Peer analysis appears after submission</p></div></div><div id="data" class="tab-content"><div id="dataTable"></div></div></div><script>
-let ratingsData=JSON.parse(localStorage.getItem('finmenRatings'))||[];
-const sampleCompanies=[{name:'Lodha Group',sector:'Real Estate',rating:'A+',agency:'ICRA'},{name:'Prestige Estates',sector:'Real Estate',rating:'A',agency:'CARE'},{name:'Oberoi Realty',sector:'Real Estate',rating:'AA-',agency:'CRISIL'},{name:'Kotak Bank',sector:'Banking',rating:'AAA',agency:'CRISIL'},{name:'HDFC Bank',sector:'Banking',rating:'AA+',agency:'ICRA'}];
-function switchTab(e,t){document.querySelectorAll('.tab-content').forEach(a=>a.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(a=>a.classList.remove('active'));document.getElementById(t).classList.add('active');e.target.classList.add('active');if(t==='data')displayData();}
-function submitRating(){const c=document.getElementById('company').value,a=document.getElementById('agency').value,s=document.getElementById('sector').value,r=document.getElementById('rating').value,o=document.getElementById('outlook').value,x=document.getElementById('action').value,n=document.getElementById('rationale').value;if(!c||!n){alert('Fill all fields');return;}
-const t={id:Date.now(),company:c,agency:a,sector:s,rating:r,outlook:o,action:x,rationale:n,timestamp:new Date().toLocaleString()};ratingsData.push(t);localStorage.setItem('finmenRatings',JSON.stringify(ratingsData));analyzeRating(t);alert('Rating submitted! Analyzing...');}
-function analyzeRating(c){const p=findPeers(c),o=flagOpportunities(c,p);document.getElementById('analysisContent').innerHTML=`<div class="section-title">🤖 AI Analysis: ${c.company}</div><div class="peer-card"><h5>Company Profile</h5><p><strong>Rating:</strong> ${c.rating} (${c.agency})</p><p><strong>Outlook:</strong> ${c.outlook}</p></div><div class="section-title">👥 Matched Peers</div><div id="peersList"></div><div class="section-title">🚩 Opportunities</div><div id="oppList"></div>`;displayPeers(p);displayOpp(o);}
-function findPeers(c){return sampleCompanies.filter(p=>p.sector===c.sector&&p.name!==c.company).slice(0,5);}
-function flagOpportunities(c,p){const o=[];const r=['BBB','BBB+','A','A+','AA-','AA','AA+','AAA'];const idx=r.indexOf(c.rating);const h=p.filter(x=>r.indexOf(x.rating)>idx);h.length>0&&o.push({type:'upgrade',name:h[0].name,conf:72,msg:`Metrics similar to ${h[0].name}`,rec:'Monitor for upgrade'});return o;}
-function displayPeers(p){let h='';p.forEach(x=>{h+=`<div class="peer-card"><h4>${x.name} <span class="score">${x.rating}</span></h4><p>${x.sector} | ${x.agency}</p></div>`;});document.getElementById('peersList').innerHTML=h;}
-function displayOpp(o){let h='';o.forEach(x=>{h+=`<div class="opportunity-item upgrade"><h5>📈 UPGRADE SIGNAL</h5><p>${x.msg}</p><p><strong>Rec:</strong> ${x.rec}</p><p>Confidence: ${x.conf}%</p></div>`;});document.getElementById('oppList').innerHTML=h;}
-function displayData(){const t=document.getElementById('dataTable');if(!ratingsData.length){t.innerHTML='<p style="color:#999">No data</p>';return;}
-let h='<table class="data-table"><thead><tr><th>Company</th><th>Sector</th><th>Rating</th><th>Agency</th></tr></thead><tbody>';ratingsData.forEach(r=>{h+=`<tr><td>${r.company}</td><td>${r.sector}</td><td>${r.rating}</td><td>${r.agency}</td></tr>`;});h+='</tbody></table>';t.innerHTML=h;}
-</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FINMEN Rating Intelligence - AI Powered</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+    .container { max-width: 1400px; margin: 0 auto; background: #fff; border-radius: 15px; box-shadow: 0 20px 60px rgba(0,0,0,.3); overflow: hidden; }
+    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; padding: 40px 20px; text-align: center; }
+    .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+    .tabs { display: flex; background: #f5f5f5; border-bottom: 2px solid #ddd; overflow-x: auto; }
+    .tab-btn { flex: 1; padding: 15px; border: none; background: 0; cursor: pointer; font-size: .95em; font-weight: 500; color: #666; min-width: 120px; white-space: nowrap; }
+    .tab-btn.active { background: #fff; color: #667eea; border-bottom: 3px solid #667eea; }
+    .tab-content { display: none; padding: 30px; }
+    .tab-content.active { display: block; }
+    .form-group { margin-bottom: 20px; }
+    label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
+    label .req::after { content: " *"; color: red; }
+    input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-family: inherit; }
+    textarea { min-height: 150px; resize: vertical; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    button { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; padding: 12px 30px; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+    button:hover { opacity: 0.9; }
+    .alert { padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 4px solid; }
+    .alert-info { background: #d1ecf1; color: #0c5460; border-left-color: #17a2b8; }
+    .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .data-table th { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; padding: 15px; text-align: left; font-weight: 600; }
+    .data-table td { padding: 12px 15px; border-bottom: 1px solid #ddd; }
+    .peer-card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 15px; }
+    .peer-card h4 { margin-bottom: 10px; color: #667eea; }
+    .peer-card h5 { margin-bottom: 10px; }
+    .score { background: #667eea; color: #fff; padding: 5px 10px; border-radius: 3px; font-weight: 600; margin-left: 10px; }
+    .section-title { font-size: 1.3em; font-weight: 700; margin: 20px 0 15px 0; color: #667eea; }
+    .opportunity-item { padding: 15px; border-radius: 5px; margin-bottom: 15px; border-left: 4px solid; }
+    .opportunity-item.upgrade { background: #fff3cd; border-left-color: #ffc107; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>📊 FINMEN Rating Intelligence</h1>
+    <p style="font-size: 1.1em; margin-top: 10px;">AI-Powered Rating Analysis & Peer Matching</p>
+  </div>
+  
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab(event, 'input')">📝 Input</button>
+    <button class="tab-btn" onclick="switchTab(event, 'analysis')">🤖 Analysis</button>
+    <button class="tab-btn" onclick="switchTab(event, 'data')">📊 Data</button>
+  </div>
+  
+  <div id="input" class="tab-content active">
+    <div class="alert alert-info">
+      ⚡ PRODUCTION - AI Analysis | Peer Matching | Opportunity Flagging
+    </div>
+    
+    <h2>Submit Company Rating</h2>
+    <div class="form-row">
+      <div class="form-group">
+        <label><span class="req">Company Name</span></label>
+        <input type="text" id="company" placeholder="e.g., Ashiana Housing Limited">
+      </div>
+      <div class="form-group">
+        <label><span class="req">Rating Agency</span></label>
+        <select id="agency" required>
+          <option value="">-- Select Agency --</option>
+          <option value="CRISIL">CRISIL</option>
+          <option value="ICRA">ICRA</option>
+          <option value="CARE">CARE Ratings</option>
+          <option value="Infomerics">Infomerics</option>
+          <option value="Acuite">Acuite</option>
+          <option value="Brickwork">Brickwork</option>
+          <option value="India Ratings">India Ratings</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label><span class="req">Industry</span></label>
+        <input type="text" id="industry" placeholder="e.g., Real Estate, Banking, NBFC, etc.">
+      </div>
+      <div class="form-group">
+        <label><span class="req">Rating</span></label>
+        <select id="rating" required>
+          <option value="">-- Select Rating --</option>
+          <option value="AAA">AAA</option>
+          <option value="AA+">AA+</option>
+          <option value="AA">AA</option>
+          <option value="AA-">AA-</option>
+          <option value="A+">A+</option>
+          <option value="A">A</option>
+          <option value="A-">A-</option>
+          <option value="BBB+">BBB+</option>
+          <option value="BBB">BBB</option>
+          <option value="BBB-">BBB-</option>
+          <option value="BB+">BB+</option>
+          <option value="BB">BB</option>
+          <option value="BB-">BB-</option>
+          <option value="B+">B+</option>
+          <option value="B">B</option>
+          <option value="B-">B-</option>
+          <option value="C">C</option>
+          <option value="D">D</option>
+          <option value="NR">NR</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label><span class="req">Outlook</span></label>
+        <select id="outlook" required>
+          <option value="">-- Select Outlook --</option>
+          <option value="Positive">Positive</option>
+          <option value="Stable">Stable</option>
+          <option value="Negative">Negative</option>
+          <option value="Developing">Developing</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label><span class="req">Rating Action</span></label>
+        <select id="action" required>
+          <option value="">-- Select Action --</option>
+          <option value="Initial Rating">Initial Rating</option>
+          <option value="Upgrade">Upgrade</option>
+          <option value="Downgrade">Downgrade</option>
+          <option value="Affirmed">Affirmed</option>
+          <option value="Withdrawn">Withdrawn</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label><span class="req">Rating Rationale (PDF, Word, or Text)</span></label>
+      <input type="file" id="rationale_file" accept=".pdf,.docx,.txt,.doc" required>
+      <small style="color: #666; display: block; margin-top: 5px;">Upload the rating rationale document or press release</small>
+    </div>
+    
+    <div class="form-group">
+      <label>Summary (Optional)</label>
+      <textarea id="summary" placeholder="Optional: Add any additional notes or summary..."></textarea>
+    </div>
+    
+    <button onclick="submitRating()">📤 Submit & Analyze</button>
+  </div>
+  
+  <div id="analysis" class="tab-content">
+    <div id="analysisContent">
+      <p style="color: #999; text-align: center; padding: 40px;">Submit a rating to see AI analysis here</p>
+    </div>
+  </div>
+  
+  <div id="data" class="tab-content">
+    <h2>All Submitted Ratings</h2>
+    <div id="dataTable">
+      <p style="color: #999;">No data yet</p>
+    </div>
+  </div>
+</div>
+
+<script>
+let ratingsData = JSON.parse(localStorage.getItem('finmenRatings')) || [];
+
+const sampleCompanies = [
+  { name: 'Lodha Group', industry: 'Real Estate', rating: 'A+', agency: 'ICRA' },
+  { name: 'Prestige Estates', industry: 'Real Estate', rating: 'A', agency: 'CARE' },
+  { name: 'Oberoi Realty', industry: 'Real Estate', rating: 'AA-', agency: 'CRISIL' },
+  { name: 'Kotak Bank', industry: 'Banking', rating: 'AAA', agency: 'CRISIL' },
+  { name: 'HDFC Bank', industry: 'Banking', rating: 'AA+', agency: 'ICRA' },
+  { name: 'ICICI Bank', industry: 'Banking', rating: 'AA+', agency: 'CARE' },
+  { name: 'Axis Bank', industry: 'Banking', rating: 'AA', agency: 'CRISIL' },
+  { name: 'Bajaj Finance', industry: 'NBFC', rating: 'AAA', agency: 'ICRA' },
+  { name: 'HDFC Ltd', industry: 'NBFC', rating: 'AA+', agency: 'CRISIL' },
+  { name: 'Reliance Industries', industry: 'Energy', rating: 'AAA', agency: 'CRISIL' }
+];
+
+function switchTab(e, t) {
+  document.querySelectorAll('.tab-content').forEach(a => a.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(a => a.classList.remove('active'));
+  document.getElementById(t).classList.add('active');
+  e.target.classList.add('active');
+  if (t === 'data') displayData();
+}
+
+function submitRating() {
+  const company = document.getElementById('company').value;
+  const agency = document.getElementById('agency').value;
+  const industry = document.getElementById('industry').value;
+  const rating = document.getElementById('rating').value;
+  const outlook = document.getElementById('outlook').value;
+  const action = document.getElementById('action').value;
+  const file = document.getElementById('rationale_file').files[0];
+  const summary = document.getElementById('summary').value;
+  
+  if (!company || !agency || !industry || !rating || !outlook || !action || !file) {
+    alert('Please fill all required fields (marked with *)');
+    return;
+  }
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const rationale_text = e.target.result;
+    
+    const record = {
+      id: Date.now(),
+      company: company,
+      agency: agency,
+      industry: industry,
+      rating: rating,
+      outlook: outlook,
+      action: action,
+      rationale_file: file.name,
+      rationale_text: rationale_text,
+      summary: summary,
+      timestamp: new Date().toLocaleString()
+    };
+    
+    ratingsData.push(record);
+    localStorage.setItem('finmenRatings', JSON.stringify(ratingsData));
+    
+    analyzeRating(record);
+    alert('✅ Rating submitted! Analyzing...');
+    
+    // Clear form
+    document.getElementById('company').value = '';
+    document.getElementById('agency').value = '';
+    document.getElementById('industry').value = '';
+    document.getElementById('rating').value = '';
+    document.getElementById('outlook').value = '';
+    document.getElementById('action').value = '';
+    document.getElementById('rationale_file').value = '';
+    document.getElementById('summary').value = '';
+  };
+  reader.readAsText(file);
+}
+
+function analyzeRating(c) {
+  const peers = findPeers(c);
+  const opps = flagOpportunities(c, peers);
+  
+  document.getElementById('analysisContent').innerHTML = `
+    <div class="section-title">🤖 AI Analysis: ${c.company}</div>
+    <div class="peer-card">
+      <h5>📋 Company Profile</h5>
+      <p><strong>Industry:</strong> ${c.industry}</p>
+      <p><strong>Rating:</strong> ${c.rating} (${c.agency})</p>
+      <p><strong>Outlook:</strong> ${c.outlook}</p>
+      <p><strong>Action:</strong> ${c.action}</p>
+    </div>
+    <div class="section-title">👥 Matched Peers</div>
+    <div id="peersList"></div>
+    <div class="section-title">🚩 Opportunities</div>
+    <div id="oppList"></div>
+  `;
+  
+  displayPeers(peers);
+  displayOpp(opps);
+  
+  // Switch to analysis tab
+  document.querySelectorAll('.tab-content').forEach(a => a.classList.remove('active'));
+  document.querySelectorAll
